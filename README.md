@@ -4,9 +4,11 @@
 
 ### Intelligent Product Recommendation Platform for Personalized Shopping Experience
 
-**QualityCart** is an AI-powered market basket recommendation system designed to help customers discover higher-rated products within the same or similar price range based on their shopping behavior. The platform analyzes user interactions such as **product views, add-to-cart events, purchases, and product ratings** to generate personalized recommendations.
+QualityCart is an AI-powered market basket recommendation system designed to help customers discover higher-rated products within the same or similar price range based on their shopping behavior. The system analyzes user interactions such as product views, add-to-cart events, purchases, and product ratings to generate intelligent product recommendations.
 
-By leveraging **Machine Learning**, **Association Rule Mining**, **Collaborative Filtering**, and **Deep Learning**, QualityCart enhances customer satisfaction, improves shopping experiences, and helps retailers increase sales through intelligent product recommendations.
+By leveraging Artificial Intelligence, Machine Learning, Market Basket Analysis, and Recommendation Systems, QualityCart enhances customer satisfaction, improves shopping experiences, and helps retailers increase sales through personalized recommendations.
+
+---
 
 ## Features
 
@@ -14,192 +16,171 @@ By leveraging **Machine Learning**, **Association Rule Mining**, **Collaborative
 
 - Recommend products based on user browsing history.
 - Analyze product views, cart additions, and purchase history.
-- Suggest products matching customer preferences.
+- Suggest higher-rated products within the same or similar price range.
 - Improve recommendation accuracy using AI.
 
 ### Market Basket Analysis
 
 - Discover frequently purchased product combinations.
-- Generate association rules using Apriori or FP-Growth.
+- Generate association rules using the Apriori Algorithm.
 - Recommend complementary products.
 - Increase cross-selling and upselling opportunities.
 
 ### Similar Product Recommendation
 
-- Recommend higher-rated products.
-- Suggest products within the same or similar price range.
-- Compare products based on ratings and popularity.
+- Recommend products similar to the selected item.
+- Compare products based on ratings and price.
 - Help customers make better purchasing decisions.
 
 ### Customer Behavior Analysis
 
-- Track user interactions across the platform.
-- Analyze purchasing patterns.
-- Identify customer interests and shopping trends.
+- Analyze customer browsing and purchasing patterns.
+- Identify customer interests and preferences.
 - Generate personalized recommendation profiles.
 
 ### Smart Recommendation Engine
 
-- Combine collaborative filtering and content-based filtering.
-- Learn continuously from user behavior.
-- Adapt recommendations in real time.
-- Improve recommendation relevance over time.
+- Recommend products based on customer behavior.
+- Suggest highly rated alternatives.
+- Provide personalized shopping recommendations.
 
-### Product Rating Prediction
+### Interactive Dashboard
 
-- Predict customer preferences.
-- Estimate product ratings using AI models.
-- Recommend highly rated alternatives.
-- Improve customer satisfaction.
+- Display recommended products.
+- Show product ratings and prices.
+- Simple and user-friendly interface.
 
-### AI Analytics Dashboard
+---
 
-- Real-time recommendation statistics.
-- Customer behavior analytics.
-- Product popularity analysis.
-- Sales performance insights.
-- Recommendation accuracy metrics.
-  
 ## AI Technologies
 
-- Machine Learning (ML)
-- Deep Learning (DL)
+- Machine Learning
 - Recommendation Systems
 - Collaborative Filtering
 - Content-Based Filtering
-- Association Rule Mining (Apriori Algorithm)
+- Association Rule Mining (Apriori)
 - User Behavior Analytics
-- Explainable AI (XAI)
+
+---
 
 ## System Architecture
 
 ```text
 Customer Interaction
 (Product View • Add to Cart • Purchase • Ratings)
-        │
-        ▼
-Data Collection Layer
-(User Activity • Product Data • Ratings)
-        │
-        ▼
-Data Preprocessing Layer
+                    │
+                    ▼
+          Data Collection Layer
+(User Activity • Product Information)
+                    │
+                    ▼
+        Data Preprocessing Layer
 (Cleaning • Feature Engineering)
-        │
-        ▼
-AI Recommendation Engine
-├── Market Basket Analysis
-├── Collaborative Filtering
-├── Content-Based Recommendation
-├── Product Rating Prediction
-└── Similar Product Recommendation
-        │
-        ▼
-Recommendation Ranking
-        │
-        ▼
-Personalized Product Suggestions
-        │
-        ▼
-Analytics Dashboard
+                    │
+                    ▼
+      AI Recommendation Engine
+      ├── Market Basket Analysis
+      ├── Collaborative Filtering
+      ├── Content-Based Recommendation
+      ├── Product Rating Analysis
+      └── Price Range Recommendation
+                    │
+                    ▼
+       Recommendation Ranking
+                    │
+                    ▼
+ Personalized Product Suggestions
+                    │
+                    ▼
+          User Dashboard
 ```
+
+---
+
 ## Tech Stack
 
 ### Frontend
 
-- React
-- Tailwind CSS
-- TypeScript
+- HTML5
+- CSS3
+- JavaScript
 
 ### Backend
 
-- FastAPI / Flask
+- Flask
 - Python
 
 ### AI & Machine Learning
 
 - Scikit-learn
-- TensorFlow
-- PyTorch
-- XGBoost
-- Surprise Library (Collaborative Filtering)
-- MLxtend (Apriori Algorithm)
-
-### Database
-
-- PostgreSQL
-- MongoDB
-
-### Data Processing
-
 - Pandas
 - NumPy
+- MLxtend (Apriori Algorithm)
 
-### Visualization
+### Dataset
 
-- Plotly
-- Matplotlib
-- Power BI
+- Amazon Products Dataset
 
-### Deployment
+### Development Tools
 
-- Docker
-- Kubernetes
-- GitHub Actions
+- Visual Studio Code
+- Git
+- GitHub
+
+---
 
 ## Project Structure
 
 ```text
-MarketBasketAI/
+QualityCart/
 │
-├── frontend/
-├── backend/
-├── ai-engine/
-│   ├── recommendation/
-│   ├── collaborative-filtering/
-│   ├── content-based/
-│   ├── association-rules/
-│   ├── rating-prediction/
-│   └── analytics/
-├── datasets/
+├── app.py
+├── requirements.txt
+├── README.md
+├── dataset/
+├── static/
+│   ├── css/
+│   ├── js/
+│   └── images/
+├── templates/
+├── utils/
 ├── models/
-├── notebooks/
-├── scripts/
-├── docs/
-├── tests/
-├── api/
-├── config/
-├── docker/
-├── .github/
-├── LICENSE
-└── README.md
+└── screenshots/
 ```
+
+---
+
 ## Project Objectives
 
 - Recommend higher-rated products within the same or similar price range.
 - Analyze customer shopping behavior using Artificial Intelligence.
 - Improve recommendation accuracy through Machine Learning.
 - Increase cross-selling and upselling opportunities.
-- Enhance the overall customer shopping experience.
-- Boost customer engagement and retention.
+- Enhance customer shopping experience.
+- Boost customer engagement.
 - Provide personalized product recommendations.
-- Support data-driven retail decision-making for businesses.
+- Support data-driven retail decision-making.
+
+---
 
 ## Future Enhancements
 
 - Real-time recommendation engine
-- Multi-Agent AI recommendation system
-- Voice-based shopping assistant
+- Deep Learning-based recommendation models
 - Explainable AI (XAI) recommendations
 - Dynamic pricing integration
-- Inventory-aware product recommendations
-- Smart expiry-aware product recommendations
-- Reinforcement Learning for adaptive recommendations
-- Mobile shopping application
-- Cloud deployment with scalable microservices
+- Inventory-aware recommendations
+- Smart expiry-aware recommendations
+- Voice-enabled shopping assistant
+- Mobile application
+- Cloud deployment
+- Multi-Agent AI recommendation system
+
+---
 
 ## Contributors
 
-**QualityCard Team**
+**QualityCart Team**
 
 - Sundara Pandiyan S
 - Sugundan S
@@ -209,14 +190,18 @@ MarketBasketAI/
 
 Building intelligent retail recommendation systems using Artificial Intelligence and Machine Learning.
 
+---
+
 ## License
 
 This project is licensed under the **MIT License**.
 
+---
+
 ## Vision
 
-The **AI-Powered Market Basket Recommendation System** aims to transform online retail by leveraging **Artificial Intelligence**, **Machine Learning**, and **customer behavior analytics** to deliver personalized, intelligent, and accurate product recommendations.
+QualityCart aims to transform online retail by leveraging Artificial Intelligence, Machine Learning, and customer behavior analytics to deliver personalized, intelligent, and accurate product recommendations.
 
-The platform helps customers discover **higher-rated products within the same or similar price range** based on their interactions, such as **product views, add-to-cart activities, and purchases**. It also enables retailers to improve customer satisfaction, increase sales through personalized recommendations, enhance cross-selling opportunities, and make data-driven business decisions for a smarter shopping experience.
+The platform helps customers discover higher-rated products within the same or similar price range based on their interactions, such as product views, add-to-cart activities, purchases, and product ratings. It enables retailers to improve customer satisfaction, increase sales through personalized recommendations, enhance cross-selling opportunities, and make data-driven business decisions for a smarter shopping experience.
 
-ver higher-quality products within their budget while enabling retailers to increase sales, improve customer satisfaction, optimize product visibility, and build a smarter shopping experience.
+---
