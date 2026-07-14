@@ -8,51 +8,51 @@
 
 By leveraging **Machine Learning**, **Association Rule Mining**, **Collaborative Filtering**, and **Deep Learning**, QualityCart enhances customer satisfaction, improves shopping experiences, and helps retailers increase sales through intelligent product recommendations.
 
-##Features
+## Features
 
-###Personalized Product Recommendation
+### Personalized Product Recommendation
 
 - Recommend products based on user browsing history.
 - Analyze product views, cart additions, and purchase history.
 - Suggest products matching customer preferences.
 - Improve recommendation accuracy using AI.
-- 
-###Market Basket Analysis
+
+### Market Basket Analysis
 
 - Discover frequently purchased product combinations.
 - Generate association rules using Apriori or FP-Growth.
 - Recommend complementary products.
 - Increase cross-selling and upselling opportunities.
-  
-###Similar Product Recommendation
+
+### Similar Product Recommendation
 
 - Recommend higher-rated products.
 - Suggest products within the same or similar price range.
 - Compare products based on ratings and popularity.
 - Help customers make better purchasing decisions.
-  
-###Customer Behavior Analysis
+
+### Customer Behavior Analysis
 
 - Track user interactions across the platform.
 - Analyze purchasing patterns.
 - Identify customer interests and shopping trends.
 - Generate personalized recommendation profiles.
-  
-###Smart Recommendation Engine
+
+### Smart Recommendation Engine
 
 - Combine collaborative filtering and content-based filtering.
 - Learn continuously from user behavior.
 - Adapt recommendations in real time.
 - Improve recommendation relevance over time.
 
-###Product Rating Prediction
+### Product Rating Prediction
 
 - Predict customer preferences.
 - Estimate product ratings using AI models.
 - Recommend highly rated alternatives.
 - Improve customer satisfaction.
 
-###AI Analytics Dashboard
+### AI Analytics Dashboard
 
 - Real-time recommendation statistics.
 - Customer behavior analytics.
