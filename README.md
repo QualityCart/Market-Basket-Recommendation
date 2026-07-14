@@ -1,4 +1,5 @@
 QualityCart
+
 Intelligent Product Recommendation Platform for Personalized Shopping Experience
 
 The AI-Powered Market Basket Recommendation System is an intelligent retail recommendation platform designed to help customers discover better products based on their shopping behavior. The system analyzes user interactions such as product views, add-to-cart events, purchases, and product ratings to recommend higher-rated products within the same or similar price range. By combining Machine Learning, Association Rule Mining, Collaborative Filtering, and Deep Learning, the platform delivers personalized recommendations that improve customer satisfaction, increase sales, and enhance the overall shopping experience.
