@@ -132,20 +132,20 @@ Customer Interaction
 ## Project Structure
 
 ```text
-QualityCart/
+QualityCart
 │
 ├── app.py
 ├── requirements.txt
 ├── README.md
-├── dataset/
-├── static/
-│   ├── css/
-│   ├── js/
-│   └── images/
-├── templates/
-├── utils/
-├── models/
-└── screenshots/
+├── dataset
+├── static
+│   ├── css
+│   ├── js
+│   └── images
+├── templates
+├── utils
+├── models
+└── screenshots
 ```
 
 ---
