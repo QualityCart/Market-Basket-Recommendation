@@ -1,0 +1,23 @@
+create table users (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  email text unique not null,
+  password text not null,
+  created_at timestamptz default now()
+);
+
+create table orders (
+  id uuid primary key default gen_random_uuid(),
+  user_email text not null,
+  order_number text not null,
+  order_date timestamptz default now(),
+  items jsonb not null,
+  address jsonb not null,
+  total numeric not null
+);
+
+alter table users enable row level security;
+alter table orders enable row level security;
+
+create policy "allow all users" on users for all using (true) with check (true);
+create policy "allow all orders" on orders for all using (true) with check (true);
