@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>QualityCart</title>
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600;700&display=swap');
@@ -215,6 +216,7 @@
       </button>
       <div id="accountDropdown" class="qc-account-dropdown">
         <div class="qc-dd-name" id="ddUserName">User</div>
+        <a onclick="setView('orders'); document.getElementById('accountDropdown').classList.remove('open');"><i class="fa-solid fa-bag-shopping" style="width:16px;color:#B98858;"></i>&nbsp; My Orders</a>
         <a onclick="logoutUser()"><i class="fa-solid fa-arrow-right-from-bracket" style="width:16px;color:#B15A3B;"></i>&nbsp; Logout</a>
       </div>
     </div>
@@ -311,6 +313,65 @@
         <input id="newPassword2" type="password" class="qc-auth-input" placeholder="Re-enter new password">
       </div>
       <button class="qc-auth-btn" onclick="resetPassword()">Update Password</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== CHECKOUT MODAL: ADDRESS -> ORDER PLACED ===================== -->
+<div id="checkoutOverlay" class="qc-auth-overlay" onclick="if(event.target===this) closeCheckoutModal()">
+  <div class="qc-auth-box">
+    <button class="qc-auth-close" onclick="closeCheckoutModal()"><i class="fa-solid fa-xmark"></i></button>
+
+    <div style="text-align:center;">
+      <div style="width:44px;height:44px;border-radius:12px;background:#B98858;display:inline-flex;align-items:center;justify-content:center;margin-bottom:8px;">
+        <i class="fa-solid fa-truck-fast" style="color:#fff;font-size:19px;"></i>
+      </div>
+      <div class="brand-font" id="checkoutTitle" style="font-weight:700;font-size:19px;">Delivery Address</div>
+    </div>
+
+    <div id="checkoutMsg" class="qc-auth-msg"></div>
+
+    <!-- STEP 1: ADDRESS FORM -->
+    <div id="checkoutAddressForm">
+      <div class="qc-auth-field">
+        <label>Full Name</label>
+        <input id="ckName" type="text" class="qc-auth-input" placeholder="Your full name">
+      </div>
+      <div class="qc-auth-field">
+        <label>Phone Number</label>
+        <input id="ckPhone" type="tel" maxlength="10" class="qc-auth-input" placeholder="10-digit mobile number">
+      </div>
+      <div class="qc-auth-field">
+        <label>Address</label>
+        <input id="ckAddress" type="text" class="qc-auth-input" placeholder="House no, street, area">
+      </div>
+      <div style="display:flex;gap:10px;">
+        <div class="qc-auth-field" style="flex:1;">
+          <label>City</label>
+          <input id="ckCity" type="text" class="qc-auth-input" placeholder="City">
+        </div>
+        <div class="qc-auth-field" style="flex:1;">
+          <label>Pincode</label>
+          <input id="ckPincode" type="text" maxlength="6" class="qc-auth-input" placeholder="6-digit pincode">
+        </div>
+      </div>
+      <button class="qc-auth-btn" onclick="submitCheckoutOrder()">Place Order</button>
+    </div>
+
+    <!-- STEP 2: ORDER CONFIRMED -->
+    <div id="checkoutConfirmed" style="display:none;text-align:center;">
+      <div style="width:56px;height:56px;border-radius:50%;background:#E9F3E5;display:flex;align-items:center;justify-content:center;margin:6px auto 14px;">
+        <i class="fa-solid fa-check" style="color:#3D7A2B;font-size:24px;"></i>
+      </div>
+      <div class="brand-font" style="font-weight:700;font-size:18px;margin-bottom:6px;">Order Placed!</div>
+      <div style="font-size:13.5px;color:#7A7264;margin-bottom:16px;">Thanks for shopping with QualityCart. Your order will be delivered soon.</div>
+      <div style="background:#F6F1E7;border-radius:12px;padding:16px;text-align:left;font-size:13.5px;color:#4A463D;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span style="color:#7A7264;">Order Number</span><span id="ckOrderNumber" style="font-weight:700;color:#B98858;"></span></div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span style="color:#7A7264;">Items</span><span id="ckOrderItems" style="font-weight:600;"></span></div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span style="color:#7A7264;">Delivering to</span><span id="ckOrderAddress" style="font-weight:600;text-align:right;max-width:200px;"></span></div>
+        <div style="display:flex;justify-content:space-between;padding-top:8px;border-top:1px solid #E3DBC9;"><span style="color:#7A7264;">Total Paid</span><span id="ckOrderTotal" style="font-weight:700;"></span></div>
+      </div>
+      <button class="qc-auth-btn" onclick="closeCheckoutModal(); setView('home');" style="margin-top:16px;">Continue Shopping</button>
     </div>
   </div>
 </div>
@@ -455,7 +516,7 @@ const PRODUCTS = [
   { id: nid(), name: "Wecool Nylon Braided Multifunction Fast Charging Cable For Android Smartphone, Ios And...", category: "Electronics", sub: "Charging", price: 333, mrp: 999, rating: 3.3, reviews: 9792, icon: "fa-plug", img: "https://m.media-amazon.com/images/I/41CnR1WhD3L._SX300_SY300_QL70_FMwebp_.jpg" },
   { id: nid(), name: "D-Link DWA-131 300 Mbps Wireless Nano USB Adapter (Black)", category: "Electronics", sub: "Networking", price: 507, mrp: 1208, rating: 4.1, reviews: 8131, icon: "fa-wifi", img: "https://m.media-amazon.com/images/I/31+NwZ8gb1L._SX300_SY300_.jpg" },
   { id: nid(), name: "Amazon Basics High-Speed HDMI Cable, 6 Feet - Supports Ethernet, 3D, 4K video,Black", category: "Electronics", sub: "Charging", price: 309, mrp: 475, rating: 4.4, reviews: 426973, icon: "fa-plug", img: "https://m.media-amazon.com/images/I/41bCxnHksnL._SY300_SX300_QL70_FMwebp_.jpg" },
-  { id: nid(), name: "7SEVEN\u00ae Compatible for Samsung Smart 4K Ultra HD TV Monitor Remote Control Replacement...", category: "Electronics", sub: "Television", price: 399, mrp: 999, rating: 3.6, reviews: 493, icon: "fa-tv", img: "https://m.media-amazon.com/images/I/21rBnbHkW9L._SX300_SY300_QL70_FMwebp_.jpg" },
+  { id: nid(), name: "7SEVENu00ae Compatible for Samsung Smart 4K Ultra HD TV Monitor Remote Control Replacement...", category: "Electronics", sub: "Television", price: 399, mrp: 999, rating: 3.6, reviews: 493, icon: "fa-tv", img: "https://m.media-amazon.com/images/I/21rBnbHkW9L._SX300_SY300_QL70_FMwebp_.jpg" },
   { id: nid(), name: "Amazonbasics Micro Usb Fast Charging Cable For Android Smartphone,Personal Computer,Pri...", category: "Electronics", sub: "Charging", price: 199, mrp: 395, rating: 4.2, reviews: 92595, icon: "fa-plug", img: "https://m.media-amazon.com/images/I/31nrDWDT8+L._SX300_SY300_.jpg" },
   { id: nid(), name: "TP-Link AC600 600 Mbps WiFi Wireless Network USB Adapter for Desktop PC with 2.4GHz/5GH...", category: "Electronics", sub: "Networking", price: 1199, mrp: 2199, rating: 4.4, reviews: 24780, icon: "fa-wifi", img: "https://m.media-amazon.com/images/I/216Q4FqmZVL._SX300_SY300_QL70_FMwebp_.jpg" },
   { id: nid(), name: "AmazonBasics Micro USB Fast Charging Cable for Android Phones with Gold Plated Connecto...", category: "Electronics", sub: "Charging", price: 179, mrp: 500, rating: 4.2, reviews: 92595, icon: "fa-plug", img: "https://m.media-amazon.com/images/I/31iESA2h2gL._SY300_SX300_QL70_FMwebp_.jpg" },
@@ -1797,6 +1858,7 @@ function getRecommendations(product, all, limit = 4) {
 --------------------------------------------------------- */
 let state = { page: "home", category: null, productId: null, sub: "All", sort: "popular", search: "", visibleCount: 24 };
 let cart = {}; // {productId: qty}
+let pendingCheckout = false; // set true when checkout was requested before login
 
 function setView(page, opts = {}) {
   state = { ...state, page, category: null, productId: null, sub: "All", sort: "popular", visibleCount: 24, ...opts };
@@ -2202,9 +2264,376 @@ function renderCartPage() {
           <div style="display:flex;justify-content:space-between;font-size:14px;color:#4A463D;margin-bottom:8px;"><span>Subtotal</span><span>${money(subtotal)}</span></div>
           <div style="display:flex;justify-content:space-between;font-size:14px;color:#4A463D;margin-bottom:14px;"><span>Delivery</span><span>Free</span></div>
           <div style="display:flex;justify-content:space-between;font-weight:700;font-size:17px;border-top:1px solid #E3DBC9;padding-top:12px;"><span>Total</span><span>${money(subtotal)}</span></div>
-          <button onclick="alert('This is a class-project demo — checkout isn\\'t wired to real payments yet!')" style="width:100%;justify-content:center;margin-top:16px;background:#221F1A;color:#fff;border:none;border-radius:10px;padding:13px 26px;font-weight:600;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:8px;">Checkout</button>
+          <button onclick="openCheckoutModal()" style="width:100%;justify-content:center;margin-top:16px;background:#221F1A;color:#fff;border:none;border-radius:10px;padding:13px 26px;font-weight:600;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:8px;">Checkout</button>
         </div>
       </div>
+    </div>`;
+}
+
+/* ---------------------------------------------------------
+   CHECKOUT: ADDRESS FORM -> ORDER PLACED (uses logged-in user's
+   name/email, asks for delivery address, generates an order number)
+--------------------------------------------------------- */
+function showCheckoutMsg(text, type) {
+  const el = document.getElementById("checkoutMsg");
+  el.textContent = text;
+  el.className = "qc-auth-msg " + type;
+}
+function clearCheckoutMsg() {
+  const el = document.getElementById("checkoutMsg");
+  el.textContent = ""; el.className = "qc-auth-msg";
+}
+
+function openCheckoutModal() {
+  const user = getCurrentUser();
+  if (!user) {
+    pendingCheckout = true;
+    openAuthModal("login");
+    return;
+  }
+  if (cartCount() === 0) return;
+
+  clearCheckoutMsg();
+  document.getElementById("checkoutTitle").textContent = "Delivery Address";
+  document.getElementById("checkoutAddressForm").style.display = "block";
+  document.getElementById("checkoutConfirmed").style.display = "none";
+  document.getElementById("ckName").value = user.name || "";
+  document.getElementById("ckPhone").value = "";
+  document.getElementById("ckAddress").value = "";
+  document.getElementById("ckCity").value = "";
+  document.getElementById("ckPincode").value = "";
+  document.getElementById("checkoutOverlay").classList.add("open");
+}
+function closeCheckoutModal() {
+  document.getElementById("checkoutOverlay").classList.remove("open");
+  clearCheckoutMsg();
+}
+
+async function submitCheckoutOrder() {
+  const name = document.getElementById("ckName").value.trim();
+  const phone = document.getElementById("ckPhone").value.trim();
+  const address = document.getElementById("ckAddress").value.trim();
+  const city = document.getElementById("ckCity").value.trim();
+  const pincode = document.getElementById("ckPincode").value.trim();
+
+  if (!name || !phone || !address || !city || !pincode) { showCheckoutMsg("Please fill in all address fields.", "error"); return; }
+  if (!/^\d{10}$/.test(phone)) { showCheckoutMsg("Please enter a valid 10-digit phone number.", "error"); return; }
+  if (!/^\d{6}$/.test(pincode)) { showCheckoutMsg("Please enter a valid 6-digit pincode.", "error"); return; }
+
+  const items = Object.entries(cart).map(([id, qty]) => ({ product: PRODUCTS.find(p => p.id === Number(id)), qty })).filter(i => i.product);
+  if (items.length === 0) { showCheckoutMsg("Your cart is empty.", "error"); return; }
+  const subtotal = items.reduce((s, i) => s + i.product.price * i.qty, 0);
+  const totalQty = items.reduce((s, i) => s + i.qty, 0);
+
+  const orderNumber = "QC-" + new Date().getFullYear() + "-" + Math.floor(10000 + Math.random() * 90000);
+
+  const user = getCurrentUser();
+  await saveOrder(user.email, {
+    orderNumber,
+    date: new Date().toISOString(),
+    items: items.map(i => ({ id: i.product.id, name: i.product.name, price: i.product.price, qty: i.qty, category: i.product.category, sub: i.product.sub })),
+    address: { name, phone, address, city, pincode },
+    total: subtotal
+  });
+
+  document.getElementById("checkoutTitle").textContent = "Order Confirmed";
+  document.getElementById("checkoutAddressForm").style.display = "none";
+  document.getElementById("checkoutConfirmed").style.display = "block";
+  document.getElementById("ckOrderNumber").textContent = orderNumber;
+  document.getElementById("ckOrderItems").textContent = totalQty + (totalQty === 1 ? " item" : " items");
+  document.getElementById("ckOrderAddress").textContent = `${address}, ${city} - ${pincode}`;
+  document.getElementById("ckOrderTotal").textContent = money(subtotal);
+
+  cart = {};
+  renderCartCount();
+}
+
+/* ---------------------------------------------------------
+   ORDER HISTORY: orders live in a Supabase "orders" table (cloud),
+   keyed by user_email, so "My Orders" shows the same history no
+   matter which device/browser the user logs in from.
+   A local cache (QC_ORDERS_KEY) is kept just so the existing
+   synchronous render code below doesn't need to change — it's
+   refreshed from Supabase right after login/signup and right
+   after a new order is placed.
+--------------------------------------------------------- */
+function getAllOrders() {
+  try { return JSON.parse(localStorage.getItem(QC_ORDERS_KEY)) || {}; }
+  catch (e) { return {}; }
+}
+async function refreshOrdersCacheForUser(email) {
+  const { data, error } = await sb.from("orders").select("*").eq("user_email", email).order("order_date", { ascending: false });
+  if (error) return;
+  const mapped = (data || []).map(row => ({
+    orderNumber: row.order_number,
+    date: row.order_date,
+    items: row.items,
+    address: row.address,
+    total: row.total
+  }));
+  const all = getAllOrders();
+  all[email] = mapped;
+  localStorage.setItem(QC_ORDERS_KEY, JSON.stringify(all));
+}
+async function saveOrder(email, order) {
+  // optimistic local update so the confirmation screen feels instant
+  const all = getAllOrders();
+  if (!all[email]) all[email] = [];
+  all[email].unshift(order);
+  localStorage.setItem(QC_ORDERS_KEY, JSON.stringify(all));
+
+  const { error } = await sb.from("orders").insert({
+    user_email: email,
+    order_number: order.orderNumber,
+    order_date: order.date,
+    items: order.items,
+    address: order.address,
+    total: order.total
+  });
+  if (error) console.error("Order cloud save failed:", error.message);
+}
+function getOrdersForUser(email) {
+  const all = getAllOrders();
+  return all[email] || [];
+}
+
+const QC_RATINGS_KEY = "qc_product_ratings";
+function getAllRatings() {
+  try { return JSON.parse(localStorage.getItem(QC_RATINGS_KEY)) || {}; }
+  catch (e) { return {}; }
+}
+function getUserRating(email, productId) {
+  const all = getAllRatings();
+  return (all[email] && all[email][productId] && all[email][productId].rating) || 0;
+}
+function getUserFeedbackText(email, productId) {
+  const all = getAllRatings();
+  return (all[email] && all[email][productId] && all[email][productId].feedback) || "";
+}
+function isReviewSubmitted(email, productId) {
+  const all = getAllRatings();
+  return !!(all[email] && all[email][productId] && all[email][productId].submitted);
+}
+function setUserRatingData(email, productId, rating, feedback, submitted) {
+  const all = getAllRatings();
+  if (!all[email]) all[email] = {};
+  const prev = all[email][productId] || {};
+  all[email][productId] = {
+    rating: rating != null ? rating : prev.rating || 0,
+    feedback: feedback != null ? feedback : prev.feedback || "",
+    submitted: submitted != null ? submitted : prev.submitted || false
+  };
+  localStorage.setItem(QC_RATINGS_KEY, JSON.stringify(all));
+}
+
+/* Reviews live in a Supabase "reviews" table (cloud), keyed by
+   user_email + product_id, so "already reviewed" holds true no matter
+   which device/browser the user is on — same pattern as orders below.
+   QC_RATINGS_KEY is kept as a local cache just so the existing
+   synchronous render code doesn't need to change; it's refreshed from
+   Supabase right after login/signup and right after page load. */
+async function refreshReviewsCacheForUser(email) {
+  const { data, error } = await sb.from("reviews").select("*").eq("user_email", email);
+  if (error) { console.error("Loading reviews from Supabase failed:", error); return error.message || "Could not load reviews."; }
+  const all = getAllRatings();
+  all[email] = {};
+  (data || []).forEach(row => {
+    all[email][row.product_id] = { rating: row.rating || 0, feedback: row.feedback || "", submitted: !!row.submitted };
+  });
+  localStorage.setItem(QC_RATINGS_KEY, JSON.stringify(all));
+  return null;
+}
+async function saveReviewToCloud(email, productId, rating, feedback, submitted) {
+  const { error } = await sb.from("reviews").upsert({
+    user_email: email,
+    product_id: productId,
+    rating: rating,
+    feedback: feedback,
+    submitted: submitted
+  }, { onConflict: "user_email,product_id" });
+  if (error) { console.error("Saving review to Supabase failed:", error); return error.message || "Could not save to database."; }
+  return null;
+}
+
+/* --- Google Sheet sync (via a Google Apps Script Web App) ---
+   Baked in below so every visitor's ratings/feedback flow into the
+   site owner's Google Sheet automatically — no per-user setup needed.
+   Each row is keyed by a unique id (email::productId) so re-rating the
+   same product UPDATES that row instead of creating duplicates. */
+const OWNER_SHEET_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbzvaVxxv1vZcQ9bRtpnFIs_y-OYZDrmhhFOh9WykaTeG-9Jts-tayAjl5Y8cs3GQaKv/exec";
+const QC_SHEET_URL_KEY = "qc_sheet_webhook_url";
+function getSheetWebhookUrl() {
+  if (OWNER_SHEET_WEBHOOK_URL && OWNER_SHEET_WEBHOOK_URL.trim()) return OWNER_SHEET_WEBHOOK_URL.trim();
+  return localStorage.getItem(QC_SHEET_URL_KEY) || "";
+}
+function sendToGoogleSheet(payload) {
+  const url = getSheetWebhookUrl();
+  if (!url) return false;
+  const body = new URLSearchParams(payload);
+  // Apps Script Web Apps don't return CORS headers, so we fire the request
+  // in "no-cors" mode — it still reaches the sheet, we just can't read the response.
+  fetch(url, { method: "POST", mode: "no-cors", body }).catch(() => {});
+  return true;
+}
+
+function orderRatingWidgetHTML(productId, orderNumber, email) {
+  const current = getUserRating(email, productId);
+  const feedbackText = getUserFeedbackText(email, productId);
+  const alreadyReviewed = isReviewSubmitted(email, productId); // lock only after Send is clicked
+
+  const stars = [1, 2, 3, 4, 5].map(n => `
+    <i class="fa-solid fa-star"
+       ${alreadyReviewed ? "" : `onclick="rateOrderedProduct(${productId}, '${orderNumber}', ${n})"`}
+       style="font-size:15px;margin-right:2px;color:${n <= current ? '#D9A441' : '#D8CFBF'};${alreadyReviewed ? 'cursor:default;' : 'cursor:pointer;'}"></i>`).join("");
+
+  if (alreadyReviewed) {
+    // Lock the star rating and feedback box once a review has been submitted for this product.
+    return `
+      <div style="display:flex;flex-direction:column;gap:6px;max-width:420px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:11.5px;color:#8A8375;">Your rating:</span>
+          <span>${stars}</span>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <input type="text" value="${feedbackText.replace(/"/g, '&quot;')}" placeholder="Add feedback (optional)" disabled readonly
+                 style="flex:1;font-size:12px;padding:6px 9px;border:1px solid #ECE6D9;border-radius:7px;outline:none;background:#F3ECDF;color:#8A8375;cursor:not-allowed;">
+          <button disabled style="font-size:11.5px;font-weight:600;background:#D8CFBF;color:#fff;border:none;border-radius:7px;padding:0 12px;cursor:not-allowed;">Send</button>
+        </div>
+        <div style="font-size:10.5px;color:#3D7A2B;font-weight:600;"><i class="fa-solid fa-circle-check"></i> Review submitted</div>
+      </div>`;
+  }
+
+  return `
+    <div style="display:flex;flex-direction:column;gap:6px;max-width:420px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="font-size:11.5px;color:#8A8375;">Rate this product:</span>
+        <span>${stars}</span>
+      </div>
+      <div style="display:flex;gap:6px;">
+        <input id="fb-${orderNumber}-${productId}" type="text" value="${feedbackText.replace(/"/g, '&quot;')}" placeholder="Add feedback (optional)"
+               style="flex:1;font-size:12px;padding:6px 9px;border:1px solid #ECE6D9;border-radius:7px;outline:none;">
+        <button onclick="submitOrderFeedback(${productId}, '${orderNumber}')" style="font-size:11.5px;font-weight:600;background:#B98858;color:#fff;border:none;border-radius:7px;padding:0 12px;cursor:pointer;">Send</button>
+      </div>
+      <div id="fbStatus-${orderNumber}-${productId}" style="font-size:10.5px;color:#3D7A2B;font-weight:600;"></div>
+    </div>`;
+}
+
+async function rateOrderedProduct(productId, orderNumber, rating) {
+  const user = getCurrentUser();
+  if (!user) return;
+  setUserRatingData(user.email, productId, rating, null); // optimistic local update
+  const wrap = document.getElementById(`rate-${orderNumber}-${productId}`);
+  if (wrap) wrap.innerHTML = orderRatingWidgetHTML(productId, orderNumber, user.email);
+
+  const feedback = getUserFeedbackText(user.email, productId);
+  const submitted = isReviewSubmitted(user.email, productId);
+  await saveReviewToCloud(user.email, productId, rating, feedback, submitted);
+}
+
+async function submitOrderFeedback(productId, orderNumber, silent) {
+  const user = getCurrentUser();
+  if (!user) return;
+  const input = document.getElementById(`fb-${orderNumber}-${productId}`);
+  const feedback = input ? input.value.trim() : getUserFeedbackText(user.email, productId);
+  const rating = getUserRating(user.email, productId);
+
+  const statusEl = document.getElementById(`fbStatus-${orderNumber}-${productId}`);
+  if (statusEl) { statusEl.style.color = "#8A8375"; statusEl.textContent = "Saving..."; }
+
+  const cloudError = await saveReviewToCloud(user.email, productId, rating, feedback, true); // persist to database
+
+  if (cloudError) {
+    // Don't lock locally if the database save failed — show the real reason so it can be fixed/retried.
+    if (statusEl) { statusEl.style.color = "#B94A3D"; statusEl.textContent = "⚠ " + cloudError; }
+    return;
+  }
+
+  setUserRatingData(user.email, productId, null, feedback, true); // lock only once the database confirms the save
+  const wrap = document.getElementById(`rate-${orderNumber}-${productId}`);
+  if (wrap) wrap.innerHTML = orderRatingWidgetHTML(productId, orderNumber, user.email);
+
+  const product = PRODUCTS.find(p => p.id === productId);
+  if (getSheetWebhookUrl()) {
+    sendToGoogleSheet({
+      id: `${user.email}::${productId}`,
+      email: user.email,
+      productId: productId,
+      productName: product ? product.name : "",
+      category: product ? product.category : "",
+      sub: product ? product.sub : "",
+      rating: rating,
+      feedback: feedback,
+      orderNumber: orderNumber
+    });
+  }
+}
+
+function renderOrdersPage() {
+  const user = getCurrentUser();
+  if (!user) {
+    return `
+      <div style="max-width:700px;margin:0 auto;padding:60px 20px 100px;text-align:center;">
+        <i class="fa-solid fa-bag-shopping" style="font-size:38px;color:#D8CFBF;margin-bottom:14px;display:block;"></i>
+        <h1 class="brand-font" style="font-size:24px;margin-bottom:8px;">My Orders</h1>
+        <div style="color:#8A8375;font-size:14px;margin-bottom:18px;">Please login to see your orders.</div>
+        <button onclick="openAuthModal('login')" style="background:#221F1A;color:#fff;border:none;border-radius:8px;padding:11px 22px;font-weight:600;font-size:13px;cursor:pointer;">Login</button>
+      </div>`;
+  }
+
+  const orders = getOrdersForUser(user.email);
+  if (orders.length === 0) {
+    return `
+      <div style="max-width:700px;margin:0 auto;padding:60px 20px 100px;text-align:center;">
+        <i class="fa-solid fa-bag-shopping" style="font-size:38px;color:#D8CFBF;margin-bottom:14px;display:block;"></i>
+        <h1 class="brand-font" style="font-size:24px;margin-bottom:8px;">My Orders</h1>
+        <div style="color:#8A8375;font-size:14px;margin-bottom:18px;">You haven't placed any orders yet.</div>
+        <button onclick="setView('home')" style="background:#221F1A;color:#fff;border:none;border-radius:8px;padding:11px 22px;font-weight:600;font-size:13px;cursor:pointer;">Start Shopping</button>
+      </div>`;
+  }
+
+  return `
+    <div style="max-width:820px;margin:0 auto;padding:32px 20px 100px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:22px;">
+        <h1 class="brand-font" style="font-size:28px;margin:0;">My Orders</h1>
+        <span style="font-size:12.5px;font-weight:600;color:#8FA88F;display:flex;align-items:center;gap:6px;">
+          <i class="fa-solid fa-check-circle" style="font-size:12px;"></i> Feedback synced automatically
+        </span>
+      </div>
+      ${orders.map(o => `
+        <div style="background:#fff;border:1px solid #ECE6D9;border-radius:14px;padding:18px 20px;margin-bottom:16px;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;border-bottom:1px solid #F1ECE0;padding-bottom:12px;margin-bottom:12px;">
+            <div>
+              <div style="font-weight:700;font-size:14.5px;color:#B98858;">${o.orderNumber}</div>
+              <div style="font-size:12px;color:#8A8375;margin-top:3px;">${new Date(o.date).toLocaleString("en-IN", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-weight:700;font-size:16px;">${money(o.total)}</div>
+              <div style="font-size:11.5px;color:#3D7A2B;font-weight:600;margin-top:3px;"><i class="fa-solid fa-circle-check"></i> Delivered</div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:12px;">
+            ${o.items.map(it => `
+              <div>
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <div style="width:40px;height:40px;border-radius:8px;flex-shrink:0;overflow:hidden;">
+                    ${(() => { const full = PRODUCTS.find(p => p.id === it.id); return full ? productThumbHTML(full, 16) : `<div style="width:100%;height:100%;background:#F3ECDF;"></div>`; })()}
+                  </div>
+                  <div style="flex:1;">
+                    <div style="font-size:13px;font-weight:600;line-height:1.3;">${it.name}</div>
+                    <div style="font-size:11.5px;color:#8A8375;">${it.sub} · Qty ${it.qty}</div>
+                  </div>
+                  <div style="font-size:13px;font-weight:600;">${money(it.price * it.qty)}</div>
+                </div>
+                <div id="rate-${o.orderNumber}-${it.id}" style="margin:8px 0 0 52px;">
+                  ${orderRatingWidgetHTML(it.id, o.orderNumber, user.email)}
+                </div>
+              </div>`).join("")}
+          </div>
+          <div style="background:#F6F1E7;border-radius:10px;padding:10px 14px;font-size:12.5px;color:#4A463D;">
+            <i class="fa-solid fa-location-dot" style="color:#B98858;margin-right:6px;"></i>
+            <b>${o.address.name}</b> · ${o.address.phone} — ${o.address.address}, ${o.address.city} - ${o.address.pincode}
+          </div>
+        </div>`).join("")}
     </div>`;
 }
 
@@ -2254,21 +2683,20 @@ function renderAboutPage() {
 }
 
 /* ---------------------------------------------------------
-   AUTH SYSTEM: SIGNUP / LOGIN / FORGOT PASSWORD (localStorage based)
-   Note: This is a frontend-only demo. OTP is generated & shown on
-   screen (simulated) since there is no real backend/email server here.
-   To send a REAL email OTP, connect a backend (e.g. Node + Nodemailer,
-   or a service like EmailJS) and replace requestOtp() with an API call.
+   AUTH SYSTEM: SIGNUP / LOGIN / FORGOT PASSWORD (Supabase cloud based)
+   Users are stored in a Supabase "users" table now, so login works
+   from ANY device/browser, not just the one that signed up.
+   Note: OTP is still simulated (shown on screen) since there is no
+   real email server here — plug in a real mailer later if needed.
 --------------------------------------------------------- */
-const QC_USERS_KEY = "qc_users";
-const QC_SESSION_KEY = "qc_current_user";
-let otpMemory = {}; // { email: otp } - kept in memory for current session
+const SUPABASE_URL = "https://mzwnijjkneumeynasgug.supabase.co";   // <-- paste your Supabase Project URL here
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im16d25pamprbmV1bWV5bmFzZ3VnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQyNjIzNjQsImV4cCI6MjA5OTgzODM2NH0.5paabgxPM_PagNtSDk7bgzIlMTf-iZWHke3BLN_y9q4";               // <-- paste your Supabase anon public key here
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-function getUsers() {
-  try { return JSON.parse(localStorage.getItem(QC_USERS_KEY)) || []; }
-  catch (e) { return []; }
-}
-function saveUsers(users) { localStorage.setItem(QC_USERS_KEY, JSON.stringify(users)); }
+const QC_SESSION_KEY = "qc_current_user";   // caches the logged-in user LOCALLY so the app doesn't need
+                                             // to re-fetch from Supabase on every click (session only, not source of truth)
+const QC_ORDERS_KEY = "qc_orders";          // local cache of THIS user's orders, refreshed from Supabase on login
+let otpMemory = {}; // { email: otp } - kept in memory for current session
 
 function isValidEmail(email) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); }
 
@@ -2328,7 +2756,7 @@ function switchAuthTab(mode) {
   }
 }
 
-function doSignup() {
+async function doSignup() {
   const name = document.getElementById("signupName").value.trim();
   const email = document.getElementById("signupEmail").value.trim().toLowerCase();
   const password = document.getElementById("signupPassword").value;
@@ -2337,13 +2765,17 @@ function doSignup() {
   if (!isValidEmail(email)) { showAuthMsg("Please enter a valid Gmail address.", "error"); return; }
   if (password.length < 4) { showAuthMsg("Password must be at least 4 characters.", "error"); return; }
 
-  const users = getUsers();
-  if (users.some(u => u.email === email)) {
+  showAuthMsg("Creating account...", "info");
+
+  const { data: existing } = await sb.from("users").select("email").eq("email", email).maybeSingle();
+  if (existing) {
     showAuthMsg("This Gmail is already registered. Please Sign In.", "error");
     return;
   }
-  users.push({ name, email, password });
-  saveUsers(users);
+
+  const { error } = await sb.from("users").insert({ name, email, password });
+  if (error) { showAuthMsg("Signup failed: " + error.message, "error"); return; }
+
   showAuthMsg("Account created! Please sign in now.", "success");
   document.getElementById("signupName").value = "";
   document.getElementById("signupPassword").value = "";
@@ -2353,33 +2785,40 @@ function doSignup() {
   }, 900);
 }
 
-function doLogin() {
+async function doLogin() {
   const email = document.getElementById("loginEmail").value.trim().toLowerCase();
   const password = document.getElementById("loginPassword").value;
 
   if (!email || !password) { showAuthMsg("Please enter both Gmail and Password.", "error"); return; }
 
-  const users = getUsers();
-  const user = users.find(u => u.email === email && u.password === password);
-  if (!user) { showAuthMsg("Incorrect email or password.", "error"); return; }
+  showAuthMsg("Checking...", "info");
 
-  localStorage.setItem(QC_SESSION_KEY, email);
+  const { data: user, error } = await sb.from("users").select("name,email,password").eq("email", email).maybeSingle();
+  if (error || !user || user.password !== password) { showAuthMsg("Incorrect email or password.", "error"); return; }
+
+  localStorage.setItem(QC_SESSION_KEY, JSON.stringify({ name: user.name, email: user.email }));
+  await refreshOrdersCacheForUser(user.email); // pull this user's cloud orders into the local cache
+  await refreshReviewsCacheForUser(user.email); // pull this user's cloud reviews into the local cache
   showAuthMsg("Login successful!", "success");
   updateAccountUI();
-  setTimeout(closeAuthModal, 600);
+  setTimeout(() => {
+    closeAuthModal();
+    if (pendingCheckout) { pendingCheckout = false; openCheckoutModal(); }
+  }, 600);
 }
 
 function logoutUser() {
   localStorage.removeItem(QC_SESSION_KEY);
+  localStorage.removeItem(QC_ORDERS_KEY);
   document.getElementById("accountDropdown").classList.remove("open");
   updateAccountUI();
 }
 
-function requestOtp() {
+async function requestOtp() {
   const email = document.getElementById("forgotEmail").value.trim().toLowerCase();
   if (!email) { showAuthMsg("Please enter your Gmail.", "error"); return; }
-  const users = getUsers();
-  const user = users.find(u => u.email === email);
+
+  const { data: user } = await sb.from("users").select("email").eq("email", email).maybeSingle();
   if (!user) { showAuthMsg("This Gmail is not registered.", "error"); return; }
 
   const otp = String(Math.floor(1000 + Math.random() * 9000)); // 4-digit OTP
@@ -2401,7 +2840,7 @@ function verifyOtp() {
   setTimeout(() => switchAuthTab("newpass"), 500);
 }
 
-function resetPassword() {
+async function resetPassword() {
   const email = otpMemory["_lastEmail"];
   const p1 = document.getElementById("newPassword1").value;
   const p2 = document.getElementById("newPassword2").value;
@@ -2410,12 +2849,8 @@ function resetPassword() {
   if (p1.length < 4) { showAuthMsg("Password must be at least 4 characters.", "error"); return; }
   if (p1 !== p2) { showAuthMsg("The two passwords do not match.", "error"); return; }
 
-  const users = getUsers();
-  const idx = users.findIndex(u => u.email === email);
-  if (idx === -1) { showAuthMsg("Something went wrong, please try again.", "error"); return; }
-
-  users[idx].password = p1;
-  saveUsers(users);
+  const { error } = await sb.from("users").update({ password: p1 }).eq("email", email);
+  if (error) { showAuthMsg("Something went wrong, please try again.", "error"); return; }
   delete otpMemory[email];
 
   document.getElementById("newPassword1").value = "";
@@ -2428,9 +2863,8 @@ function resetPassword() {
 }
 
 function getCurrentUser() {
-  const email = localStorage.getItem(QC_SESSION_KEY);
-  if (!email) return null;
-  return getUsers().find(u => u.email === email) || null;
+  try { return JSON.parse(localStorage.getItem(QC_SESSION_KEY)); }
+  catch (e) { return null; }
 }
 
 function onAccountTriggerClick() {
@@ -2477,14 +2911,14 @@ document.addEventListener("click", (e) => {
      store stats included as grounding context, so answers stay
      accurate instead of the model guessing numbers.
 --------------------------------------------------------- */
-const GROQ_KEY_STORAGE = "";
+const GROQ_KEY_STORAGE = "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";
 
 /* ============================================================
    PASTE YOUR GROQ API KEY HERE (between the quotes below).
    Get a free key from https://console.groq.com
    Example: const DEFAULT_GROQ_API_KEY = "gsk_abc123XYZ...";
    ============================================================ */
-const DEFAULT_GROQ_API_KEY = "Paste you api key";
+const DEFAULT_GROQ_API_KEY = "";
 let sunshineOpen = false;
 let sunshineHistory = []; // {role: 'user'|'assistant', content}
 let sunshineGreeted = false;
@@ -2683,6 +3117,7 @@ function renderApp() {
   else if (state.page === "category") html = renderCategoryPage();
   else if (state.page === "product") html = renderProductPage();
   else if (state.page === "cart") html = renderCartPage();
+  else if (state.page === "orders") html = renderOrdersPage();
   else if (state.page === "about") html = renderAboutPage();
   else html = renderHome();
   document.getElementById("app").innerHTML = html;
@@ -2700,6 +3135,13 @@ function updateHeaderActiveStates() {
 document.getElementById("year").textContent = new Date().getFullYear();
 updateHeaderActiveStates();
 updateAccountUI();
+(function syncOrdersOnLoad() {
+  const user = getCurrentUser();
+  if (user) {
+    Promise.all([refreshOrdersCacheForUser(user.email), refreshReviewsCacheForUser(user.email)])
+      .then(() => { if (state.page === "orders") renderApp(); });
+  }
+})();
 renderApp();
 </script>
 </body>
